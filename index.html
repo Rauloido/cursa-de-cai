@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cursa de Cai</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    :root {
+      --bg-color: #f8f8f8;
+      --race-bg: #e5e5e5;
+      --text-color: #000;
+      --menu-bg: #fff;
+      --lane-border: #aaa;
+      --primary-color: #007bff;
+      --success-color: #28a745;
+    }
+    body.dark {
+      --bg-color: #121212;
+      --race-bg: #222;
+      --text-color: #fff;
+      --menu-bg: #1e1e1e;
+      --lane-border: #555;
+      --primary-color: #4da6ff;
+      --success-color: #2ecc71;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        background:var(--bg-color); 
+        color:var(--text-color); 
+        transition: background 0.3s, color 0.3s;
+    }
+
+    h1 { margin:15px; font-size:2rem; }
+
+    #startMenu, #nameMenu { 
+      display:flex; flex-direction:column; align-items:center; 
+      width:95%; max-width:450px; background:var(--menu-bg); 
+      padding:20px; border-radius:15px; box-shadow:0px 4px 15px rgba(0,0,0,0.2); 
+      margin-bottom:20px; transition: background 0.3s;
+    }
+    #nameMenu { display:none; }
+
+    .horse-row { 
+      display:flex; align-items:center; justify-content:space-between; 
+      width:100%; margin:8px 0; padding:10px; border-radius:10px; 
+      background:var(--race-bg); transition: background 0.3s;
+    }
+    body.dark .horse-row { background:#333; }
+    
+    .horse-color { width:35px; height:35px; border-radius:8px; margin-right:12px; }
+    .horse-number { font-size:1.3rem; font-weight:bold; margin-right:12px; width:30px; text-align:center; }
+    .name-input { 
+      flex:1; padding:8px; border-radius:8px; border:1px solid var(--lane-border); 
+      font-size:1rem; background:var(--bg-color); color:var(--text-color);
+      transition: border-color 0.3s;
+    }
+    button { 
+      background:var(--primary-color); color:white; border:none; 
+      padding:15px; border-radius:12px; font-size:1.1rem; 
+      margin-top:15px; width:100%; cursor:pointer;
+      transition: background 0.2s;
+    }
+    button:hover { opacity:0.9; }
+
+    #settingsTab { 
+      position:fixed; top:15px; right:15px; background:var(--primary-color); 
+      color:white; padding:10px 15px; border-radius:10px; cursor:pointer; 
+      z-index:200; box-shadow:0 2px 5px rgba(0,0,0,0.3); 
+    }
+    @media (max-width: 600px) {
+        #settingsTab {
+            padding: 10px; 
+        }
+        #settingsTab span {
+            display: none; 
+        }
+    }
+    
+    #settingsPanel { 
+      position:fixed; top:60px; right:15px; background:var(--menu-bg); 
+      color:var(--text-color); padding:15px; border-radius:10px; 
+      box-shadow:0 4px 15px rgba(0,0,0,0.2); display:none; z-index:200; width:200px; 
+    }
+
+    #race { 
+      display:none; width:100%; max-width:450px; 
+      height:75vh; 
+      flex-direction:column; justify-content:space-between; 
+      background:var(--race-bg); border:3px solid black; 
+      border-top:none; border-bottom:none; 
+      overflow:hidden; position:relative;
+      padding-bottom: 40px; 
+      padding-top: 20px; 
+    }
+    .lane-container { display:flex; flex:1; position:relative; justify-content:space-around; }
+    .lane { 
+      flex-grow:1;
+      width:calc(100% / 6); 
+      border-right:1px dashed var(--lane-border);
+      display:flex; justify-content:center; position:relative; 
+      background-image: linear-gradient(to top, var(--lane-border) 1px, transparent 1px); 
+      background-size:100% 20px; 
+    }
+    .lane:last-child { border-right:none; }
+    
+    .horse { 
+      width:35px; height:35px; position:absolute; left:50%; transform:translateX(-50%); 
+      bottom:40px; 
+      transition:none; 
+      display:flex; flex-direction:column; align-items:center; justify-content:center; 
+      font-weight:bold; color:white; border-radius:8px; 
+      box-shadow:0 2px 5px rgba(0,0,0,0.4); z-index:2; 
+      font-size: 20px; 
+      line-height: 35px;
+    }
+    
+    .start-line, .finish-line { 
+        position: absolute; 
+        left: 0; 
+        right: 0; 
+        height: 3px; 
+        background: black; 
+        z-index: 10; 
+        display: flex; 
+        justify-content: center;
+    }
+    .start-line { bottom: 35px; } 
+    .finish-line { top: 20px; }
+
+    .line-text {
+        position: absolute;
+        font-size: 10px;
+        font-weight: bold;
+        color: black;
+        background: white;
+        padding: 0 5px;
+        border: 1px solid black;
+        border-radius: 5px;
+        z-index: 11;
+    }
+    .start-text { bottom: -12px; } 
+    .finish-text { top: -16px; } 
+
+    .horse-name { 
+        position: absolute; 
+        bottom: 0; 
+        font-size: 9px; 
+        font-weight: bold; 
+        color: var(--text-color); 
+        margin-top: 3px; 
+        text-align: center; 
+        width: 100%; 
+        z-index: 1; 
+    }
+
+    #winnerScreen { 
+      display:none; position:fixed; top:0; left:0; right:0; bottom:0; 
+      background:rgba(0,0,0,0.9); color:white; font-size:2rem; 
+      display:flex; align-items:center; justify-content:center; 
+      flex-direction:column; z-index:100; text-align:center; padding:20px; 
+    }
+    #winnerScreen button { margin-top:20px; background:var(--success-color); max-width:300px; }
+    
+    #winnerText {
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px white, 0 0 20px white;
+    }
+    body.dark #winnerText {
+      text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+    }
+  </style>
+</head>
+<body>
+<h1>🐎 Cursa de Cai</h1>
+
+<div id="startMenu">
+  <button onclick="showNameMenu()">Play</button>
+</div>
+
+<div id="nameMenu">
+  <p><strong>Adaugă numele fiecărui cal:</strong></p>
+  <div id="nameInputs"></div>
+  <button onclick="startRace()">Start Cursa</button>
+</div>
+
+<div id="settingsTab" onclick="toggleSettings(event)">
+    ⚙ <span class="settings-text">Setări</span>
+</div>
+<div id="settingsPanel">
+  <label><input type="checkbox" id="darkModeToggle"> Dark Mode</label><br><br>
+  <label><input type="checkbox" id="vibrateToggle"> Vibrație la final (Suport limitat)</label>
+</div>
+
+<div id="race"></div>
+
+<div id="winnerScreen">
+  <p id="winnerText"></p>
+  <button onclick="resetGame()">Play Again</button>
+</div>
+
+<script>
+const numHorses = 6;
+const colors = ["#e74c3c","#3498db","#2ecc71","#9b59b6","#f39c12","#d35400"];
+let horseNames=[], horses=[], raceActive = false, winnerIndex = -1; 
+let raceDiv;
+let animationFrameId;
+let frameCount = 0; 
+
+const HORSE_HEIGHT = 35;
+const START_OFFSET = 40; 
+const FINISH_LINE_TOP = 20; 
+const RACE_DURATION_SEC = 10; 
+const DELAY_WINNER_ANNOUNCE_MS = 3000; // Întârzierea de 3 secunde
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    raceDiv = document.getElementById("race");
+    
+    document.getElementById('nameMenu').style.display = 'none';
+    raceDiv.style.display = 'none';
+    document.getElementById('winnerScreen').style.display = 'none';
+    document.getElementById('startMenu').style.display = 'flex';
+});
+
+document.addEventListener('click', function(event) {
+    const settingsPanel = document.getElementById('settingsPanel');
+    const settingsTab = document.getElementById('settingsTab');
+
+    if (settingsPanel.style.display === 'block' && !settingsPanel.contains(event.target) && !settingsTab.contains(event.target)) {
+        settingsPanel.style.display = 'none';
+    }
+});
+
+
+const nameContainer = document.getElementById("nameInputs");
+for(let i=0;i<numHorses;i++){
+  nameContainer.innerHTML+=`
+    <div class="horse-row">
+      <div class="horse-color" style="background:${colors[i]}"></div>
+      <div class="horse-number">${i+1}</div>
+      <input class="name-input" id="name${i}" placeholder="Cal ${i+1}" value="Cal ${i+1}">
+    </div>`;
+}
+
+document.getElementById("darkModeToggle").addEventListener("change",(e)=>{ document.body.classList.toggle("dark",e.target.checked); });
+function toggleSettings(event){
+    if (event) event.stopPropagation();
+    const panel=document.getElementById("settingsPanel");
+    panel.style.display=(panel.style.display==="block"?"none":"block");
+}
+
+function showNameMenu(){
+  document.getElementById("startMenu").style.display="none";
+  document.getElementById("nameMenu").style.display="flex";
+}
+
+function startRace(){
+  horseNames=[]; horses=[];
+  document.getElementById("nameMenu").style.display="none";
+  
+  raceDiv.innerHTML=""; 
+
+  const startLine=document.createElement("div"); 
+  startLine.className="start-line";
+  startLine.innerHTML = `<span class="line-text start-text">START</span>`;
+  raceDiv.appendChild(startLine);
+
+  const finishLine=document.createElement("div"); 
+  finishLine.className="finish-line";
+  finishLine.innerHTML = `<span class="line-text finish-text">FINISH</span>`;
+  raceDiv.appendChild(finishLine);
+
+  const laneContainer=document.createElement("div");
+  laneContainer.className="lane-container";
+  raceDiv.appendChild(laneContainer);
+
+  for(let i=0;i<numHorses;i++){
+    const nameInput = document.getElementById(`name${i}`);
+    horseNames.push(nameInput.value || `Cal ${i+1}`);
+
+    const lane=document.createElement("div");
+    lane.className="lane";
+    laneContainer.appendChild(lane);
+
+    const horse=document.createElement("div");
+    horse.className="horse";
+    horse.style.backgroundColor=colors[i];
+    horse.textContent=`🐎`;
+    lane.appendChild(horse);
+    
+    const horseNameLabel = document.createElement("div");
+    horseNameLabel.className = "horse-name";
+    horseNameLabel.textContent = horseNames[i];
+    lane.appendChild(horseNameLabel);
+
+    horses.push({
+      element: horse, 
+      position: 0, 
+      name: horseNames[i], 
+      color: colors[i],
+      speed_factor: 1.0 
+    });
+  }
+  
+  raceDiv.style.display="flex";
+  
+  horses.forEach(h => {
+    h.element.style.bottom = START_OFFSET + "px";
+  });
+  
+  runRace();
+}
+
+function runRace(){
+  raceActive = true;
+  winnerIndex = -1;
+  frameCount = 0;
+  
+  const raceTotalHeight = raceDiv.clientHeight; 
+  const maxDisplacement = (raceTotalHeight - FINISH_LINE_TOP) - START_OFFSET - HORSE_HEIGHT;
+
+  function step() {
+    if (!raceActive) return;
+
+    if (winnerIndex === -1) {
+      const framesPerSec = 60; 
+      const base_move = maxDisplacement / (RACE_DURATION_SEC * framesPerSec);
+      
+      horses.forEach((h, index) => {
+        
+        // Logica de burst/slow
+        if (frameCount % 60 === 0) {
+          if(Math.random() < 0.7) { 
+            h.speed_factor = Math.random() * 0.5 + 0.5; // Încetinire: 0.5 - 1.0
+          } else { 
+            h.speed_factor = Math.random() * 0.7 + 1.0; // Accelerare: 1.0 - 1.7
+          }
+        }
+
+        let move = base_move * h.speed_factor;
+        
+        h.position += move;
+        
+        if (h.position >= maxDisplacement && winnerIndex === -1) { 
+            h.position = maxDisplacement;
+            winnerIndex = index; 
+        }
+        
+        h.element.style.bottom = h.position + START_OFFSET + "px"; 
+      });
+
+      frameCount++;
+
+      if (winnerIndex !== -1) {
+        cancelAnimationFrame(animationFrameId);
+        endRace(winnerIndex); 
+      } else {
+        animationFrameId = requestAnimationFrame(step);
+      }
+    } 
+  }
+
+  animationFrameId = requestAnimationFrame(step);
+}
+
+function endRace(index){
+  raceActive = false; 
+  
+  // Așteptăm 3 secunde (3000ms) înainte de a afișa câștigătorul
+  setTimeout(() => {
+    document.getElementById("winnerScreen").style.display="flex";
+    document.getElementById("winnerText").innerHTML=`
+      <span style="color:${horses[index].color};">🏆</span> Câștigător: ${horses[index].name} (Cal ${index+1})
+    `;
+    if(document.getElementById("vibrateToggle").checked && 'vibrate' in navigator){
+      navigator.vibrate([100, 50, 400]);
+    }
+  }, DELAY_WINNER_ANNOUNCE_MS);
+}
+
+function resetGame(){
+  document.getElementById("winnerScreen").style.display="none";
+  raceDiv.style.display="none";
+  document.getElementById("nameMenu").style.display="flex";
+  
+  horses.forEach(h => {
+    h.position = 0;
+    h.element.style.bottom = START_OFFSET + "px"; 
+    h.speed_factor = 1.0; 
+  });
+}
+</script>
+</body>
+</html>
