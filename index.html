@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cursa de Cai</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Cursa de Cai</title> 
   <style>
     :root {
       --bg-color: #f8f8f8;
@@ -173,6 +176,29 @@
     body.dark #winnerText {
       text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
     }
+
+    #install-prompt {
+        display: none;
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        z-index: 1000;
+        text-align: center;
+        max-width: 90%;
+        font-size: 0.9rem;
+    }
+    #install-prompt img {
+        height: 20px;
+        vertical-align: middle;
+        margin: 0 5px;
+        /* Pentru a arăta bine pe fundalul negru */
+        filter: invert(1);
+    }
   </style>
 </head>
 <body>
@@ -203,6 +229,10 @@
   <button onclick="resetGame()">Play Again</button>
 </div>
 
+<div id="install-prompt">
+    Pentru a juca mai ușor, apasă pe iconul de distribuire <img src="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSI3NTAiIGhlaWdoPSI3NTAiIHZpZXdCb3g9IjAgMCA3NTAgNzUwIj4KPHBhdGggZD0iTTM1MS4zNyw1ODguNjMsNDgwLjE0LDQ0OC4wNiw1MjEuOTcsNDQ4LjA2QTQ3LjUxLDQ3LjUxLDAsMCwwLDU2OS41LDQwMC42NFY4NS42MWE0Ny41MSw0Ny41MSwwLDAsMC00Ny41MS00Ny41MVoiIHN0eWxlPSJmaWxsOiNjYjQ1MTE7c3Ryb2tlOiMwMDA7c3Ryb2tlLXdpZHRoOjIwO3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyOyIvPgo8cGF0aCBkPSJNNjQ1LjUzLDQ2OS4wOSw2NDUuNTMsNDY5LjA5YTEwLjI3LDEwLjI3LDAsMCwxLDcuMzksMTcuNTJsLTc0LjQzLDc0LjQzYTg2LjU4LDg2LjU4LDAsMCwxLTEyMS44MywwTDI1Ny4wOSwzNzEuMjhhODYuNTgsODYuNTgsMCwwLDEsMC0xMjEuODNMNjEyLjk0LDE0YTEwLjMxLDEwLjMxLDAsMCwxLDE2LjI5LDExLjYxTDY1MCwxMDkuNDZhODYuNTcsODYuNTcsMCwwLDEsMTYuNTgsMTExLjM1QzY4Ny44MSw2MTMuMzQsNzIwLjY2LDU1Ny45Miw2OTMuMDgsNDk5LjExbC4wNy4xOEExMC4wOSwxMC4wOSwwLDAsMSw3MDMuNTksNDk1bC41OS4zNWE5LjM5LDkuMzksMCwwLDEsMTIuNTktMi41NSwxMC43MiwxMC43MiwwLDAsMSwyLjU3LTEzLjc0bDYuMjUsLTUuNzZhMjUuNzksMjUuNzksMCwwLDAsMTEuMTQtMjcuNDgsMzkuODksMzkuODksMCwwLDAtNy41Ny0zMS4xNkw2NDkuNjIsMzk1LjQ0YTEwLjI2LDEwLjI2LDAsMCwxLDE1LjkxLTYuMzVsMy0xLjU1LDEuODktMy42NWEyNi43NSwyNi43NSwwLDAsMCwxMC45NC0xOC40MWwtMS4zOS0xNS45MkEyOS4wOSwyOS4wOSwwLDAsMCw3MDQuMTYsNDAwLjM5YTEwLjI3LDEwLjI3LDAsMCwxLDcuNTItMTEuNDVsMy42MS0xLjgyYTcuNTIsNy41MiwwLDAsMSwyLjMtMS4xMWExMC41MSwxMC41MSwwLDAsMSw1Ljc1LjQ4TDcyMy41OSwzODYuNTRhMTAuMTksMTAuMTksMCwwLDEsMS42NSw4LjgxTDcyMi45LDUzNC4yOWExMC4yMywxMC4yMywwLDAsMS0xMi40NSwxMC41Myw5LjcsOS43LDAsMCwxLTYuNDMtOC41M2wtMi4yMy0xMi42MS0uMzUtMi41NC0xLjU4LTE0Ljg4YTEwLjIzLDEwLjIzLDAsMCwxLTYuNDItNy40OWw0LjY3LTEwLjc2QzcwOC4yLDUwMS4yOSw2NzkuNTYsNTU3LjY0LDY3MC4yMyw1OTEuNjl6IiBzdHlsZT0iZmlsbDojY2I0NTExO3N0cm9rZTojMDAwO3N0cm9rZS13aWR0aDoyMDtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46cm91bmQ7Ii8+Cjwvc3ZnPgo=" /> și alege **"Adaugă la ecranul de pornire"**.
+</div>
+
 <script>
 const numHorses = 6;
 const colors = ["#e74c3c","#3498db","#2ecc71","#9b59b6","#f39c12","#d35400"];
@@ -215,7 +245,7 @@ const HORSE_HEIGHT = 35;
 const START_OFFSET = 40; 
 const FINISH_LINE_TOP = 20; 
 const RACE_DURATION_SEC = 10; 
-const DELAY_WINNER_ANNOUNCE_MS = 3000; // Întârzierea de 3 secunde
+const DELAY_WINNER_ANNOUNCE_MS = 3000; 
 
 document.addEventListener('DOMContentLoaded', (event) => {
     raceDiv = document.getElementById("race");
@@ -224,6 +254,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     raceDiv.style.display = 'none';
     document.getElementById('winnerScreen').style.display = 'none';
     document.getElementById('startMenu').style.display = 'flex';
+    
+    // Verifică dacă este un dispozitiv iOS și afișează instrucțiunile
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+    if (isIOS && !isStandalone) {
+        document.getElementById('install-prompt').style.display = 'block';
+    }
 });
 
 document.addEventListener('click', function(event) {
@@ -335,9 +373,9 @@ function runRace(){
         // Logica de burst/slow
         if (frameCount % 60 === 0) {
           if(Math.random() < 0.7) { 
-            h.speed_factor = Math.random() * 0.5 + 0.5; // Încetinire: 0.5 - 1.0
+            h.speed_factor = Math.random() * 0.5 + 0.5; 
           } else { 
-            h.speed_factor = Math.random() * 0.7 + 1.0; // Accelerare: 1.0 - 1.7
+            h.speed_factor = Math.random() * 0.7 + 1.0; 
           }
         }
 
@@ -370,7 +408,6 @@ function runRace(){
 function endRace(index){
   raceActive = false; 
   
-  // Așteptăm 3 secunde (3000ms) înainte de a afișa câștigătorul
   setTimeout(() => {
     document.getElementById("winnerScreen").style.display="flex";
     document.getElementById("winnerText").innerHTML=`
